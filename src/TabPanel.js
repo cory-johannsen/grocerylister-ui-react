@@ -30,9 +30,11 @@ class TabPanel extends Component {
         {
           this.props.tabs.map( (tab) =>
             {
-              return (
-                <Tab key={tab.id} children={tab.element} visible={this.props.selectedTab === tab.id} />
-              )
+              if (tab.id === this.props.selectedTab) {
+                return (
+                    <Tab key={tab.id} children={tab.element} visible={this.props.selectedTab === tab.id} />
+                )
+              }
             }
           )
         }
