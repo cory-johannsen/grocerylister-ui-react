@@ -1,0 +1,18 @@
+.Menu {
+  background-color: #222;
+  height: 30px;
+  padding: 5px;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.Menu-item {
+  border: 1px solid white;
+  margin: 2px;
+  width: 120px;
+  height: 25px;
+  padding-top: 3px;
+  cursor: pointer;
+}
