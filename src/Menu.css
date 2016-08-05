@@ -1,4 +1,4 @@
-.Menu {
+.menu {
   background-color: #222;
   height: 30px;
   padding: 5px;
@@ -8,7 +8,7 @@
   justify-content: center;
 }
 
-.Menu-item {
+.menuItem {
   border: 1px solid white;
   margin: 2px;
   width: 120px;

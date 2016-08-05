@@ -1,43 +1,26 @@
 import React, { Component } from 'react';
 
+import Tab from './Tab.js'
+import StoreList from './StoreList.js'
+import ProductList from './ProductList.js'
 import './TabPanel.css';
 
-class Tab extends Component {
-  propTypes: {
-    children: React.PropTypes.element.required,
-    visible: React.PropTypes.bool.required
-  }
-
-  render() {
-    return (
-      <div className={this.props.visible ? 'Tab' : 'Tab-hidden'}>
-        {this.props.children}
-      </div>
-    );
-  }
-}
 
 class TabPanel extends Component {
 
   propTypes: {
-    tabs: React.PropTypes.array.required,
-    selectedTab: React.PropTypes.string.required
+    children: React.PropTypes.element.required,
+    selectedTab: React.PropTypes.string.required,
+    apiUrlBase: React.PropTypes.string.required
   }
 
   render() {
     return (
-      <div className="TabPanel">
-        {
-          this.props.tabs.map( (tab) =>
-            {
-              if (tab.id === this.props.selectedTab) {
-                return (
-                    <Tab key={tab.id} children={tab.element} visible={this.props.selectedTab === tab.id} />
-                )
-              }
-            }
-          )
-        }
+      <div className="tabPanel">
+        <Tab id='Stores' visible={this.props.selectedTab === 'Stores'}><StoreList apiUrlBase={this.props.apiUrlBase}/></Tab>
+        <Tab id='Products' visible={this.props.selectedTab === 'Products'}><ProductList /></Tab>
+        <Tab id='Shopping Lists' visible={this.props.selectedTab === 'Shopping Lists'}>Shopping Lists go here</Tab>
+
       </div>
     );
   }

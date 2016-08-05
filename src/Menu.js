@@ -9,7 +9,7 @@ class MenuItem extends Component {
 
   render() {
     return (
-      <div className="Menu-item" onClick={ (e) => this.props.onClick(e, this.props.title) }>{this.props.title}</div>
+      <div className="menuItem" onClick={ (e) => this.props.onClick(e, this.props.title) }>{this.props.title}</div>
     );
   }
 }
@@ -22,7 +22,7 @@ class Menu extends Component {
 
   render() {
     return (
-      <div className="Menu">
+      <div className="menu">
         <MenuItem title='Stores' onClick={this.props.onClick}/>
         <MenuItem title='Products' onClick={this.props.onClick}/>
         <MenuItem title='Shopping Lists' onClick={this.props.onClick}/>
