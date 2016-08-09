@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Tab.css';
 
 class Tab extends Component {
-  propTypes: {
+  static propTypes: {
     id: React.PropTypes.string.required,
     children: React.PropTypes.element.required,
     visible: React.PropTypes.bool.required

@@ -4,7 +4,7 @@ import './DepartmentList.css'
 
 class DepartmentList extends Component {
 
-  propTypes: {
+  static propTypes: {
     apiUrlBase: React.PropTypes.string.required,
     collapsed: React.PropTypes.bool.required
   }
@@ -53,8 +53,8 @@ class DepartmentList extends Component {
       <div className={this.props.collapsed ? 'departmentList' : 'departmentListCollapsed'} >
         {
           this.state.departments.map (
-            (department) => {
-              return <div className="departmentListItem" key={department.departmentName}
+            (department, i) => {
+              return <div className="departmentListItem" key={department.departmentName + '_' + i}
                   onClick={(e) => this.handleDepartmentClick(e)}>{department.departmentName}</div>
             }
           )

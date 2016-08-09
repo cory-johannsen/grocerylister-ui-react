@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "./Menu.css"
 
 class MenuItem extends Component {
-  propTypes: {
+  static propTypes: {
     title: React.PropTypes.string.required,
     onClick: React.PropTypes.func.required
   }

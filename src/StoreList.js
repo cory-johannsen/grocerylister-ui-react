@@ -5,7 +5,7 @@ import DepartmentList from './DepartmentList.js'
 
 class StoreList extends Component {
 
-  propTypes: {
+  static propTypes: {
     apiUrlBase: React.PropTypes.string.required
   }
 
@@ -62,13 +62,15 @@ class StoreList extends Component {
         {
           this.state.stores.map (
             (store) => {
-              return <div className="storeListItem"
-                key={store.name}
-                onClick={(e) => this.handleStoreClick(e, store.name)}>
-                  {store.name}
-                  <DepartmentList apiUrlBase={store._links.self.href}
-                    collapsed={store.name === this.state.selectedStore}/>
-              </div>
+              return (
+                <div className="storeListItem"
+                  key={store.name}
+                  onClick={(e) => this.handleStoreClick(e, store.name)}>
+                    {store.name}
+                    <DepartmentList apiUrlBase={store._links.self.href}
+                      collapsed={store.name === this.state.selectedStore}/>
+                </div>
+              )
             }
           )
         }

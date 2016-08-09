@@ -7,7 +7,7 @@ import './App.css'
 
 class App extends Component {
 
-  propTypes: {
+  static propTypes: {
     apiUrlBase: React.PropTypes.string.required
   }
 
