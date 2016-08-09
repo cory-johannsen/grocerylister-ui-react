@@ -32,7 +32,6 @@ class ProductList extends Component {
     ).then (
       (json) => {
         this.setState({
-          ...this.state,
           payload: json,
           products: json._embedded.product
         })
@@ -58,11 +57,10 @@ class ProductList extends Component {
           return response.json()
         }
       ).then((json) => {
-          console.log('Found department for product', product.name, ' :', json)
           const departments = this.state.departments
           departments[product._links.department.href] = json
+          console.log("departments:", departments)
           this.setState({
-            ...this.state,
             departments: departments
           })
         }
@@ -87,17 +85,20 @@ class ProductList extends Component {
         </div>
         {
           this.state.products.map (
-            (product) => {
+            (product, i) => {
               const department = this.state.departments[product._links.department.href]
+              console.log('department:', department)
+              console.log('href:', product._links.department.href)
+              const departmentName = (department ? department.departmentName : '')
+              const productKey = product.name + '_' + i
               return (
-                <div className="itemRow">
+                <div className="itemRow"  key={productKey}>
                   <div className="productListItem"
-                    key={product.name}
                     onClick={(e) => this.handleStoreClick(e, product.name)}>
                       {product.name}
                   </div>
                   <div className="productListItem">
-                      {department ? department.name : ''}
+                      {departmentName}
                   </div>
                 </div>
               )
