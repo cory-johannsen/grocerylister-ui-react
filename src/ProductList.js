@@ -59,7 +59,6 @@ class ProductList extends Component {
       ).then((json) => {
           const departments = this.state.departments
           departments[product._links.department.href] = json
-          console.log("departments:", departments)
           this.setState({
             departments: departments
           })
@@ -87,8 +86,6 @@ class ProductList extends Component {
           this.state.products.map (
             (product, i) => {
               const department = this.state.departments[product._links.department.href]
-              console.log('department:', department)
-              console.log('href:', product._links.department.href)
               const departmentName = (department ? department.departmentName : '')
               const productKey = product.name + '_' + i
               return (

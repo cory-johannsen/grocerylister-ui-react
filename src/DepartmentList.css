@@ -10,12 +10,50 @@
   visibility: collapse;
 }
 
-.departmentListItem {
-  width: 100%;
-  padding-left: 10px;
-  padding-top: 1px;
+.departmentListRow {
+  width: 25%;
+  height: 25px;
+  padding-left: 15px;
+  padding-top: 4px;
   padding-bottom: 1px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+}
+
+
+.departmentListItem {
   font-weight: normal;
   text-align: left;
-  cursor: pointer;
+  flex-grow: 1;
+}
+
+.upButton {
+  font-weight: normal;
+  transform: rotate(0.75turn);
+  color: black;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  align: center;
+  text-align: center;
+  border: 1px solid;
+  margin-left: 3px;
+}
+
+.disabled {
+  opacity: 0.25;
+}
+
+.downButton {
+  font-weight: normal;
+  transform: rotate(0.25turn);
+  color: black;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  align: center;
+  text-align: center;
+  border: 1px solid;
+  margin-left: 3px;
 }
