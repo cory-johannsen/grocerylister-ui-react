@@ -2,6 +2,7 @@ var path = require('path');
 var autoprefixer = require('autoprefixer');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var cssModules = '?modules&localIdentName=[name]__[local]___[hash:base64:5]'
 
 const NODE_ENV = process.env.NODE_ENV;
 const dotenv = require('dotenv');
@@ -47,7 +48,10 @@ const defines =
   });
 
 
-  console.log('defines', defines)
+console.log('defines', defines)
+console.log('srcPath', srcPath)
+console.log('nodeModulesPath', nodeModulesPath)
+console.log('indexHtmlPath', indexHtmlPath)
 
 module.exports = {
   devtool: 'eval',
@@ -64,7 +68,7 @@ module.exports = {
     publicPath: '/'
   },
   resolve: {
-    extensions: ['', '.js'],
+    extensions: ['', '.js', '.jsx', '.haml', '.scss'],
   },
   resolveLoader: {
     root: nodeModulesPath,
@@ -79,37 +83,22 @@ module.exports = {
       }
     ],
     loaders: [
+      { test: /\.jsx?$/, loaders: ['react-hot', 'babel'], exclude: /node_modules/ },
+      // { test: /\.jsx?$/, loaders: ['source-map'], include: /node_modules\/@datanerd/ },
+      { test: /\.scss$/, loader: 'style!css!sass', include: /node_modules/ },
       {
-        test: /\.js$/,
-        include: srcPath,
-        loader: 'babel',
-        query: require('./babel.dev')
-      },
-      {
-        test: /\.css$/,
-        include: srcPath,
-        loader: 'style!css!postcss'
-      },
-      {
-        test: /\.json$/,
-        loader: 'json'
-      },
-      {
-        test: /\.(jpg|png|gif|eot|svg|ttf|woff|woff2)$/,
-        loader: 'file',
-      },
-      {
-        test: /\.(mp4|webm)$/,
-        loader: 'url?limit=10000'
+        test: /\.scss$/,
+        loader: 'style!css' + cssModules + '!sass',
+        exclude: /node_modules/
+      }, {
+        test: /\.png$/,
+        loader: 'url'
       }
     ]
   },
   eslint: {
     configFile: path.join(__dirname, 'eslint.js'),
     useEslintrc: false
-  },
-  postcss: function() {
-    return [autoprefixer];
   },
   plugins: [
     new HtmlWebpackPlugin({

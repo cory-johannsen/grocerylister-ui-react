@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
-import Menu from './Menu.js'
-import TabPanel from './TabPanel.js'
-import './App.css'
+import Menu from './Menu'
+import TabPanel from './TabPanel'
+import style from './App.scss'
 
 
 class App extends Component {
 
-  static propTypes: {
-    apiUrlBase: React.PropTypes.string.required
+  static propTypes = {
+    apiUrlBase: React.PropTypes.string.isRequired
   }
 
   constructor() {
@@ -26,8 +26,8 @@ class App extends Component {
 
   render() {
     return (
-      <div className="app">
-        <div className="appHeader">
+      <div className={style.app}>
+        <div className={style.appHeader}>
           <h2>GroceryLister 2: The Listering</h2>
         </div>
         <Menu onClick={this.handleMenuClick.bind(this)} />

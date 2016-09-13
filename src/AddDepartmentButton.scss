@@ -1,0 +1,22 @@
+.addDepartmentButton {
+  width: 25%;
+  height: 30px;
+  padding-left: 15px;
+  padding-top: 4px;
+  padding-bottom: 1px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border: 1px solid black;
+}
+
+.input {
+  width: 75%;
+  height: 20px;
+}
+
+.plus {
+  margin-right: 17px;
+  font-size: x-large;
+}

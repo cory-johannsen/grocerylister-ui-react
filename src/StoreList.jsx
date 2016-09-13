@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 
-import './StoreList.css'
-import DepartmentList from './DepartmentList.js'
+import style from './StoreList.scss'
+import DepartmentList from './DepartmentList'
 
 class StoreList extends Component {
 
-  static propTypes: {
-    apiUrlBase: React.PropTypes.string.required
+  static propTypes = {
+    apiUrlBase: React.PropTypes.string.isRequired
   }
 
   constructor () {
@@ -58,12 +58,12 @@ class StoreList extends Component {
 
   render () {
     return (
-      <div className="storeList">
+      <div className={style.storeList}>
         {
           this.state.stores.map (
             (store) => {
               return (
-                <div className="storeListItem"
+                <div className={style.storeListItem}
                   key={store.name}
                   onClick={(e) => this.handleStoreClick(e, store.name)}>
                     {store.name}

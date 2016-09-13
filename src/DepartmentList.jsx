@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import cx from 'classnames'
 
-import './DepartmentList.css'
+import AddDepartmentButton from './AddDepartmentButton'
+import style from './DepartmentList.scss'
 
 class DepartmentList extends Component {
 
-  static propTypes: {
-    apiUrlBase: React.PropTypes.string.required,
-    collapsed: React.PropTypes.bool.required
+  static propTypes = {
+    apiUrlBase: React.PropTypes.string.isRequired,
+    collapsed: React.PropTypes.bool.isRequired
   }
 
   constructor () {
@@ -83,6 +84,10 @@ class DepartmentList extends Component {
     }
   }
 
+  handleAddDepartmentClick(department) {
+    console.log("Add Department button clicked. New department:", department)
+  }
+
   storeDepartments(departments) {
     const url = this.props.apiUrlBase + '/departments'
     let departmentLinks = []
@@ -116,26 +121,27 @@ class DepartmentList extends Component {
 
   render () {
     return (
-      <div className={this.props.collapsed ? 'departmentList' : 'departmentListCollapsed'} >
+      <div className={this.props.collapsed ? style.departmentList : style.departmentListCollapsed} >
         {
           this.state.departments.map (
             (department, i) => {
               const departmentCount = this.state.departments.length;
               return (
-                <div className="departmentListRow"key={department.departmentName + '_' + i}>
-                  <div className="departmentListItem"
+                <div className= {style.departmentListRow} key={department.departmentName + '_' + i}>
+                  <div className={style.departmentListItem}
                     onClick={(e) => this.handleDepartmentClick(e, department)}>
                       {this.formatDepartmentName(department.departmentName)}
                   </div>
-                  <div className={ i === 0 ? cx("upButton", "disabled") : "upButton" }
+                  <div className={ i === 0 ? cx(style.upButton, style.disabled) : style.upButton }
                     onClick={(e) => this.handleUpClick(e, department, i)}>&gt;</div>
-                  <div className={ i >= (departmentCount - 1) ? cx("downButton", "disabled") : "downButton" }
+                  <div className={ i >= (departmentCount - 1) ? cx(style.downButton, style.disabled) : style.downButton }
                     onClick={(e) => this.handleDownClick(e, department, i)}>&gt;</div>
                 </div>
               )
             }
           )
         }
+        <AddDepartmentButton onClick={(e) => this.handleAddDepartmentClick(e)} />
       </div>
     )
   }

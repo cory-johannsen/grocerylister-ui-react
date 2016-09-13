@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 
-import './ProductList.css'
+import style from './ProductList.scss'
 
 class ProductList extends Component {
-  static propTypes: {
-    apiUrlBase: React.PropTypes.string.required
+  static propTypes = {
+    apiUrlBase: React.PropTypes.string.isRequired
   }
 
   constructor () {
@@ -77,10 +77,10 @@ class ProductList extends Component {
 
   render () {
     return (
-      <div className="productList">
-        <div className="headerRow">
-          <div className="headerRowItem">Product</div>
-          <div className="headerRowItem">Department</div>
+      <div className={style.productList}>
+        <div className={style.headerRow}>
+          <div className={style.headerRowItem}>Product</div>
+          <div className={style.headerRowItem}>Department</div>
         </div>
         {
           this.state.products.map (
@@ -89,12 +89,12 @@ class ProductList extends Component {
               const departmentName = (department ? department.departmentName : '')
               const productKey = product.name + '_' + i
               return (
-                <div className="itemRow"  key={productKey}>
-                  <div className="productListItem"
+                <div className={style.itemRow}  key={productKey}>
+                  <div className={style.productListItem}
                     onClick={(e) => this.handleStoreClick(e, product.name)}>
                       {product.name}
                   </div>
-                  <div className="productListItem">
+                  <div className={style.productListItem}>
                       {departmentName}
                   </div>
                 </div>

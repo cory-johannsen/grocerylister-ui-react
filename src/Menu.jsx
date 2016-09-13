@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import "./Menu.css"
+import style from "./Menu.scss"
 
 class MenuItem extends Component {
-  static propTypes: {
-    title: React.PropTypes.string.required,
-    onClick: React.PropTypes.func.required
+  static propTypes = {
+    title: React.PropTypes.string.isRequired,
+    onClick: React.PropTypes.func.isRequired
   }
 
   render() {
     return (
-      <div className="menuItem" onClick={ (e) => this.props.onClick(e, this.props.title) }>{this.props.title}</div>
+      <div className={style.menuItem} onClick={ (e) => this.props.onClick(e, this.props.title) }>{this.props.title}</div>
     );
   }
 }
@@ -22,7 +22,7 @@ class Menu extends Component {
 
   render() {
     return (
-      <div className="menu">
+      <div className={style.menu}>
         <MenuItem title='Stores' onClick={this.props.onClick}/>
         <MenuItem title='Products' onClick={this.props.onClick}/>
         <MenuItem title='Shopping Lists' onClick={this.props.onClick}/>
