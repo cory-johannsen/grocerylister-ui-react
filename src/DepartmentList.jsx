@@ -8,6 +8,7 @@ class DepartmentList extends Component {
 
   static propTypes = {
     apiUrlBase: React.PropTypes.string.isRequired,
+    storeUrlBase: React.PropTypes.string.isRequired,
     collapsed: React.PropTypes.bool.isRequired
   }
 
@@ -20,7 +21,7 @@ class DepartmentList extends Component {
   }
 
   componentDidMount() {
-    const url = this.props.apiUrlBase + '/departments'
+    const url = this.props.storeUrlBase + '/departments'
     fetch(url,
       {
         method: 'get',
@@ -54,7 +55,7 @@ class DepartmentList extends Component {
   handleUpClick(e, department, i) {
     e.stopPropagation();
     if (i > 0) {
-      console.log('Moving', department.departmentName, 'at index', i, 'up!')
+      console.log('Moving', department.name, 'at index', i, 'up!')
       // move the item down in the department array
       let departments = this.state.departments.slice(0, i).concat(this.state.departments.slice(i + 1))
       departments.splice(i - 1, 0, department)
@@ -71,7 +72,7 @@ class DepartmentList extends Component {
   handleDownClick(e, department, i) {
     e.stopPropagation();
     if (i < this.state.departments.length - 1) {
-      console.log('Moving', department.departmentName, 'at index', i, 'down!')
+      console.log('Moving', department.name, 'at index', i, 'down!')
       let departments = this.state.departments.slice(0, i).concat(this.state.departments.slice(i + 1))
       departments.splice(i + 1, 0, department)
 
@@ -85,17 +86,79 @@ class DepartmentList extends Component {
   }
 
   handleAddDepartmentClick(department) {
-    console.log("Add Department button clicked. New department:", department)
+    if (department && department !== '' && department.trim() !== '') {
+      const url = this.props.apiUrlBase + '/department'
+      fetch(url,
+        {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({name: department})
+        }
+      ).then (
+        (response) => {
+          if (response.status === 409) {
+            // A department with this name already exists.  Use the existing one.
+            this.addExistingDepartment(department)
+          }
+          else {
+            response.json().then (
+              (json) => {
+                const departments = this.state.departments;
+                departments.push(json)
+                this.setState({
+                  departments: departments
+                })
+                this.storeDepartments(departments)
+              }
+            )
+          }
+        }
+      ).catch (
+        (err) => {
+          console.log(err)
+        }
+      )
+    }
+  }
+
+  addExistingDepartment(departmentName) {
+    const url = this.props.apiUrlBase + `/department/search/findByName?name=${departmentName}`
+    fetch(url,
+      {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    ).then (
+      (response) => {
+        return response.json()
+      }
+    ).then (
+      (json) => {
+        const departments = this.state.departments;
+        departments.push(json)
+        this.setState({
+          departments: departments
+        })
+        this.storeDepartments(departments)
+      }
+    ).catch (
+      (err) => {
+        console.log(err)
+      }
+    )
   }
 
   storeDepartments(departments) {
-    const url = this.props.apiUrlBase + '/departments'
+    const url = this.props.storeUrlBase + '/departments'
     let departmentLinks = []
     departments.map((department) => {
         departmentLinks.push(department._links.self.href)
     })
     const departmentListBody = departmentLinks.join('\n')
-    console.log(departmentListBody)
     fetch(url,
       {
         method: 'put',
@@ -115,8 +178,8 @@ class DepartmentList extends Component {
     )
   }
 
-  formatDepartmentName(departmentName) {
-    return departmentName.replace(/_/g, ' ');
+  formatDepartmentName(name) {
+    return name.replace(/_/g, ' ');
   }
 
   render () {
@@ -127,10 +190,10 @@ class DepartmentList extends Component {
             (department, i) => {
               const departmentCount = this.state.departments.length;
               return (
-                <div className= {style.departmentListRow} key={department.departmentName + '_' + i}>
+                <div className= {style.departmentListRow} key={department.name + '_' + i}>
                   <div className={style.departmentListItem}
                     onClick={(e) => this.handleDepartmentClick(e, department)}>
-                      {this.formatDepartmentName(department.departmentName)}
+                      {this.formatDepartmentName(department.name)}
                   </div>
                   <div className={ i === 0 ? cx(style.upButton, style.disabled) : style.upButton }
                     onClick={(e) => this.handleUpClick(e, department, i)}>&gt;</div>

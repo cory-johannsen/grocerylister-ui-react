@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 
+import AddProductButton from './AddProductButton'
 import style from './ProductList.scss'
 
 class ProductList extends Component {
@@ -75,9 +76,17 @@ class ProductList extends Component {
     console.log('Clicked ', product)
   }
 
+  handleAddProduct(product, department) {
+    console.log('Add product:', product, 'department:', department)
+  }
+
   render () {
+    const defaultDepartment = this.state.departments && this.state.departments.length > 0 ? this.state.departments[0] : {}
     return (
       <div className={style.productList}>
+        <AddProductButton onAddProduct={(product) => this.handleAddProduct(product)}
+          apiUrlBase={this.props.apiUrlBase}
+          defaultDepartment={defaultDepartment}/>
         <div className={style.headerRow}>
           <div className={style.headerRowItem}>Product</div>
           <div className={style.headerRowItem}>Department</div>
@@ -86,7 +95,7 @@ class ProductList extends Component {
           this.state.products.map (
             (product, i) => {
               const department = this.state.departments[product._links.department.href]
-              const departmentName = (department ? department.departmentName : '')
+              const name = (department ? department.name : '')
               const productKey = product.name + '_' + i
               return (
                 <div className={style.itemRow}  key={productKey}>
@@ -95,7 +104,7 @@ class ProductList extends Component {
                       {product.name}
                   </div>
                   <div className={style.productListItem}>
-                      {departmentName}
+                      {name}
                   </div>
                 </div>
               )

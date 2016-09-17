@@ -34,7 +34,6 @@ class StoreList extends Component {
     ).then (
       (json) => {
         this.setState({
-          ...this.state,
           payload: json,
           stores: json._embedded.store
         })
@@ -50,7 +49,6 @@ class StoreList extends Component {
     const selectedStore = (store === this.state.selectedStore ? undefined : store)
     this.setState(
       {
-        ...this.state,
         selectedStore: selectedStore
       }
     )
@@ -67,7 +65,8 @@ class StoreList extends Component {
                   key={store.name}
                   onClick={(e) => this.handleStoreClick(e, store.name)}>
                     {store.name}
-                    <DepartmentList apiUrlBase={store._links.self.href}
+                    <DepartmentList apiUrlBase={this.props.apiUrlBase}
+                      storeUrlBase={store._links.self.href}
                       collapsed={store.name === this.state.selectedStore}/>
                 </div>
               )
