@@ -7,8 +7,7 @@ import style from './AddProductButton.scss'
 class AddProductButton extends Component {
   static propTypes = {
     onAddProduct: React.PropTypes.func.isRequired,
-    apiUrlBase: React.PropTypes.string.isRequired,
-    defaultDepartment: React.PropTypes.object.isRequired,
+    apiUrlBase: React.PropTypes.string.isRequired
   }
 
   constructor() {
@@ -20,7 +19,7 @@ class AddProductButton extends Component {
 
   handleClick(e) {
     e.stopPropagation()
-    this.props.onAddProduct(this.refs.product.value, this.state.department || this.props.defaultDepartment)
+    this.props.onAddProduct(this.refs.product.value, this.state.department)
   }
 
   handleKeyPress(e) {

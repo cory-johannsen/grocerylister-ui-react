@@ -12,13 +12,20 @@ class DepartmentSelectBox extends Component {
   constructor() {
     super()
     this.state = {
-      departments: []
+      departments: [],
+      selectedDepartment: null
     }
   }
 
-  handleSelect(e) {
+  handleOnChange(e) {
     e.stopPropagation()
-    this.props.onSelect(this.refs.department.value)
+    const departmentHref = this.refs.department.value
+    this.state.departments.forEach((department) => {
+      if (department._links.self.href === departmentHref) {
+        this.props.onSelect(department)
+      }
+    })
+
   }
 
   componentDidMount() {
@@ -36,9 +43,12 @@ class DepartmentSelectBox extends Component {
       }
     ).then (
       (json) => {
+        const selectedDepartment = json._embedded.department[0]
         this.setState({
-          departments: json._embedded.department
+          departments: json._embedded.department,
+          selectedDepartment: selectedDepartment
         })
+        this.props.onSelect(selectedDepartment)
       }
     ).catch (
       (err) => {
@@ -54,10 +64,10 @@ class DepartmentSelectBox extends Component {
   render () {
     return (
       <div className={style.departmentSelectBox}>
-        <select className={style.select} ref='department' onSelect={(e) => this.handleSelect(e)}>
+        <select className={style.select} ref='department' onChange={(e) => this.handleOnChange(e)}>
         {
-          this.state.departments.map((department) => {
-            return <option label={this.formatDepartmentName(department.name)} value={department._links.self.href} />
+          this.state.departments.map((department, i) => {
+            return <option key={department.name + '_' + i} label={this.formatDepartmentName(department.name)} value={department._links.self.href} />
           })
         }
         </select>

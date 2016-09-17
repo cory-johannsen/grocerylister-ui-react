@@ -81,12 +81,10 @@ class ProductList extends Component {
   }
 
   render () {
-    const defaultDepartment = this.state.departments && this.state.departments.length > 0 ? this.state.departments[0] : {}
     return (
       <div className={style.productList}>
-        <AddProductButton onAddProduct={(product) => this.handleAddProduct(product)}
-          apiUrlBase={this.props.apiUrlBase}
-          defaultDepartment={defaultDepartment}/>
+        <AddProductButton onAddProduct={(product, department) => this.handleAddProduct(product, department)}
+          apiUrlBase={this.props.apiUrlBase} />
         <div className={style.headerRow}>
           <div className={style.headerRowItem}>Product</div>
           <div className={style.headerRowItem}>Department</div>
