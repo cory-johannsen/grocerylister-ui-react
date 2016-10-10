@@ -75,18 +75,30 @@ export default class StoreList extends Component {
 
   handleAddDepartment(department) {
     if (department && department !== '' && department.trim() !== '') {
+      // Do not allow duplicates
+      let duplicate = false
+      this.state.selectedStore.departments.forEach((d) => {
+        if (d.name === department) {
+          duplicate = true
+        }
+      })
+      if (duplicate) {
+        console.log(`StoreList.handleAddDepartment: department ${department} is a duplicate.`)
+        return
+      }
+
       const url = this.props.apiUrlBase
       const query = {
         query: 'mutation addDepartmentToStore($departmentName: String!, $storeId: Int!)' +
           ' { addDepartmentToStore(departmentName: $departmentName, storeId: $storeId)' +
-          ' { id, name, departments { id, name} } }',
+          ' { id, name, departments { id, name } } }',
         variables: {
           departmentName: department,
           storeId: this.state.selectedStore.id
         }
       }
       const body = JSON.stringify(query)
-      console.log('query body:', body)
+      // console.log('query body:', body)
 
       fetch(url,
         {
@@ -98,23 +110,29 @@ export default class StoreList extends Component {
         }
       ).then (
         (response) => {
-          console.log(response)
-          // if (response.status === 409) {
-          //   // A department with this name already exists.  Use the existing one.
-          //   this.addExistingDepartment(department)
-          // }
-          // else {
-          //   response.json().then (
-          //     (json) => {
-          //       const departments = this.state.departments;
-          //       departments.push(json)
-          //       this.setState({
-          //         departments: departments
-          //       })
-          //       this.storeDepartments(departments)
-          //     }
-          //   )
-          // }
+          if (response.status != 200) {
+            console.log('Error adding department:', response)
+          }
+          else {
+            return response.json()
+          }
+        }
+      ).then(
+        (json) => {
+          const { stores } = this.state
+          const store = json.data.addDepartmentToStore
+          debugger
+          const newStores = stores.map((s) => {
+            if (s.id === store.id) {
+              return store
+            }
+            return s
+          })
+
+          this.setState({
+            stores: newStores,
+            seletedStore: store
+          })
         }
       ).catch (
         (err) => {
