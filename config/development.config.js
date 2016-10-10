@@ -1,1 +1,1 @@
-API_URL_BASE='http://localhost:9000'
+API_URL_BASE='http://localhost:3000/graphql'

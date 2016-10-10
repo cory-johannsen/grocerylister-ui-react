@@ -3,7 +3,7 @@ import cx from 'classnames'
 
 import style from './AddDepartmentButton.scss'
 
-class AddDepartmentButton extends Component {
+export default class AddDepartmentButton extends Component {
   static propTypes = {
     onClick: React.PropTypes.func.isRequired
   }
@@ -28,5 +28,3 @@ class AddDepartmentButton extends Component {
     )
   }
 }
-
-export default AddDepartmentButton;

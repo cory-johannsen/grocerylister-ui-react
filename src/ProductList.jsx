@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import AddProductButton from './AddProductButton'
 import style from './ProductList.scss'
 
-class ProductList extends Component {
+export default class ProductList extends Component {
   static propTypes = {
     apiUrlBase: React.PropTypes.string.isRequired
   }
@@ -18,7 +18,7 @@ class ProductList extends Component {
   }
 
   componentDidMount() {
-    let url = this.props.apiUrlBase + "/product?size=1000"
+    let url = this.props.apiUrlBase + "/product?size=1000&sort=name&name.dir=desc"
     fetch(url,
       {
         method: 'get',
@@ -76,8 +76,53 @@ class ProductList extends Component {
     console.log('Clicked ', product)
   }
 
+  handleSortByProduct() {
+    console.log('Sort By Product')
+    const products = this.state.products
+    products.sort((p1, p2) => {
+      return p1.name.localeCompare(p2.name)
+    })
+    this.setState({
+      products: products
+    })
+  }
+
+  handleSortByDepartment() {
+    console.log('Sort By Department')
+    const products = this.state.products
+    products.sort((p1, p2) => {
+      const department1 = this.state.departments[p1._links.department.href]
+      const department2 = this.state.departments[p2._links.department.href]
+      if (department1.name === department2.name) {
+        return p1.name.localeCompare(p2.name)
+      }
+      else {
+        return department1.name.localeCompare(department2.name)
+      }
+    })
+    this.setState({
+      products: products
+    })
+  }
+
   handleAddProduct(product, department) {
     console.log('Add product:', product, 'department:', department)
+    if (product && product !== '' && product.trim() !== '') {
+      const url = this.props.apiUrlBase + '/product'
+      fetch(url,
+        {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({name: product, department: department._links.self.href})
+        }
+      ).catch (
+        (err) => {
+          console.log(err)
+        }
+      )
+    }
   }
 
   render () {
@@ -86,8 +131,8 @@ class ProductList extends Component {
         <AddProductButton onAddProduct={(product, department) => this.handleAddProduct(product, department)}
           apiUrlBase={this.props.apiUrlBase} />
         <div className={style.headerRow}>
-          <div className={style.headerRowItem}>Product</div>
-          <div className={style.headerRowItem}>Department</div>
+          <div className={style.headerRowItem} onClick={() => { this.handleSortByProduct() }}>Product</div>
+          <div className={style.headerRowItem} onClick={() => { this.handleSortByDepartment() }}>Department</div>
         </div>
         {
           this.state.products.map (
@@ -102,7 +147,7 @@ class ProductList extends Component {
                       {product.name}
                   </div>
                   <div className={style.productListItem}>
-                      {name}
+                      { name.replace(/_/g, ' ') }
                   </div>
                 </div>
               )
@@ -113,5 +158,3 @@ class ProductList extends Component {
     )
   }
 }
-
-export default ProductList;

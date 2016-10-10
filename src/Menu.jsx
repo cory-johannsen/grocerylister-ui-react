@@ -14,7 +14,7 @@ class MenuItem extends Component {
   }
 }
 
-class Menu extends Component {
+export default class Menu extends Component {
 
   propTypes: {
     onClick: React.PropTypes.func.required
@@ -30,5 +30,3 @@ class Menu extends Component {
     );
   }
 }
-
-export default Menu;

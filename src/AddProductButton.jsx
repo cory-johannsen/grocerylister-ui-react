@@ -4,7 +4,7 @@ import cx from 'classnames'
 import DepartmentSelectBox from './DepartmentSelectBox'
 import style from './AddProductButton.scss'
 
-class AddProductButton extends Component {
+export default class AddProductButton extends Component {
   static propTypes = {
     onAddProduct: React.PropTypes.func.isRequired,
     apiUrlBase: React.PropTypes.string.isRequired
@@ -44,5 +44,3 @@ class AddProductButton extends Component {
     )
   }
 }
-
-export default AddProductButton;

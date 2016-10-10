@@ -5,7 +5,7 @@ import TabPanel from './TabPanel'
 import style from './App.scss'
 
 
-class App extends Component {
+export default class App extends Component {
 
   static propTypes = {
     apiUrlBase: React.PropTypes.string.isRequired
@@ -36,5 +36,3 @@ class App extends Component {
     )
   }
 }
-
-export default App;

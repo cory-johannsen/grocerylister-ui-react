@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import style from './StoreList.scss'
 import DepartmentList from './DepartmentList'
 
-class StoreList extends Component {
+export default class StoreList extends Component {
 
   static propTypes = {
     apiUrlBase: React.PropTypes.string.isRequired
@@ -12,20 +12,23 @@ class StoreList extends Component {
   constructor () {
     super()
     this.state = {
-      payload: {},
       stores: [],
-      selectStore: ''
+      selectedStore: {}
     }
   }
 
   componentDidMount() {
-    const url = this.props.apiUrlBase + "/store"
+    const url = this.props.apiUrlBase
+    const query = {
+      query: '{ stores { id, name, departments { id, name }} }'
+    }
     fetch(url,
       {
-        method: 'get',
+        method: 'post',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(query)
       }
     ).then (
       (response) => {
@@ -34,8 +37,7 @@ class StoreList extends Component {
     ).then (
       (json) => {
         this.setState({
-          payload: json,
-          stores: json._embedded.store
+          stores: json.data.stores
         })
       }
     ).catch (
@@ -49,7 +51,101 @@ class StoreList extends Component {
     const selectedStore = (store === this.state.selectedStore ? undefined : store)
     this.setState(
       {
-        selectedStore: selectedStore
+        selectedStore
+      }
+    )
+  }
+
+  handleDepartmentMove(department, oldIndex, newIndex) {
+    let departments = this.state.selectedStore.departments.slice(0, oldIndex)
+      .concat(this.state.selectedStore.departments.slice(oldIndex + 1))
+    departments.splice(newIndex, 0, department)
+
+    console.log(departments)
+    const {selectedStore} = this.state
+    selectedStore.departments = departments
+    this.setState(
+      {
+        selectedStore
+      }
+    )
+
+    //this.storeDepartments(departments)
+  }
+
+  handleAddDepartment(department) {
+    if (department && department !== '' && department.trim() !== '') {
+      const url = this.props.apiUrlBase
+      const query = {
+        query: 'mutation addDepartmentToStore($departmentName: String!, $storeId: Int!)' +
+          ' { addDepartmentToStore(departmentName: $departmentName, storeId: $storeId)' +
+          ' { id, name, departments { id, name} } }',
+        variables: {
+          departmentName: department,
+          storeId: this.state.selectedStore.id
+        }
+      }
+      const body = JSON.stringify(query)
+      console.log('query body:', body)
+
+      fetch(url,
+        {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: body
+        }
+      ).then (
+        (response) => {
+          console.log(response)
+          // if (response.status === 409) {
+          //   // A department with this name already exists.  Use the existing one.
+          //   this.addExistingDepartment(department)
+          // }
+          // else {
+          //   response.json().then (
+          //     (json) => {
+          //       const departments = this.state.departments;
+          //       departments.push(json)
+          //       this.setState({
+          //         departments: departments
+          //       })
+          //       this.storeDepartments(departments)
+          //     }
+          //   )
+          // }
+        }
+      ).catch (
+        (err) => {
+          console.log(err)
+        }
+      )
+    }
+  }
+
+  storeDepartments(departments) {
+    const url = this.props.storeUrlBase + '/departments'
+    let departmentLinks = []
+    departments.map((department) => {
+        departmentLinks.push(department._links.self.href)
+    })
+    const departmentListBody = departmentLinks.join('\n')
+    fetch(url,
+      {
+        method: 'put',
+        headers: {
+          'Content-Type': 'text/uri-list'
+        },
+        body: departmentListBody
+      }
+    ).then (
+      (response) => {
+        console.log(response)
+      }
+    ).catch (
+      (err) => {
+        console.log(err)
       }
     )
   }
@@ -62,12 +158,15 @@ class StoreList extends Component {
             (store) => {
               return (
                 <div className={style.storeListItem}
-                  key={store.name}
-                  onClick={(e) => this.handleStoreClick(e, store.name)}>
+                  key={store.id}
+                  onClick={(e) => this.handleStoreClick(e, store)}>
                     {store.name}
-                    <DepartmentList apiUrlBase={this.props.apiUrlBase}
-                      storeUrlBase={store._links.self.href}
-                      collapsed={store.name === this.state.selectedStore}/>
+                    <DepartmentList
+                      departments={store.departments}
+                      onDepartmentAdd={(department) => this.handleAddDepartment(department)}
+                      onDepartmentMove={(department, oldIndex, newIndex) =>
+                        this.handleDepartmentMove(department, oldIndex, newIndex)}
+                      collapsed={store === this.state.selectedStore}/>
                 </div>
               )
             }
@@ -77,5 +176,3 @@ class StoreList extends Component {
     )
   }
 }
-
-export default StoreList;

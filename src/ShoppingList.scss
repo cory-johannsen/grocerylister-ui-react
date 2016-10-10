@@ -1,0 +1,44 @@
+.shoppingList {
+  width: 33%;
+  height: 100%;
+  font-weight: normal;
+  padding-left: 10px;
+  padding-top: 5px;
+
+}
+
+.availableProducts {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.selectedProducts {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+}
+
+.productsListRow {
+  height: 25px;
+  padding-left: 10px;
+  padding-top: 4px;
+  padding-bottom: 1px;
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+.productsListRowItem {
+  font-weight: normal;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.productName {
+
+}

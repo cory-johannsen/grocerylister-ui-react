@@ -3,7 +3,7 @@ import cx from 'classnames'
 
 import style from './DepartmentSelectBox.scss'
 
-class DepartmentSelectBox extends Component {
+export default class DepartmentSelectBox extends Component {
   static propTypes = {
     onSelect: React.PropTypes.func.isRequired,
     apiUrlBase: React.PropTypes.string.isRequired
@@ -75,5 +75,3 @@ class DepartmentSelectBox extends Component {
     )
   }
 }
-
-export default DepartmentSelectBox;

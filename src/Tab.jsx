@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import style from './Tab.scss';
 
-class Tab extends Component {
+export default class Tab extends Component {
   static propTypes = {
     id: React.PropTypes.string.isRequired,
     children: React.PropTypes.node.isRequired,
@@ -17,5 +17,3 @@ class Tab extends Component {
     );
   }
 }
-
-export default Tab;
