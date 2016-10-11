@@ -29,26 +29,29 @@ export default class DepartmentSelectBox extends Component {
   }
 
   componentDidMount() {
-    const url = this.props.apiUrlBase + '/department?size=1000'
+    const url = this.props.apiUrlBase
+    const query = {
+      query: '{ departments { id, name} }'
+    }
     fetch(url,
       {
-        method: 'get',
+        method: 'post',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(query)
       }
     ).then (
       (response) => {
+        console.log('departments response:', response)
         return response.json()
       }
     ).then (
       (json) => {
-        const selectedDepartment = json._embedded.department[0]
         this.setState({
-          departments: json._embedded.department,
-          selectedDepartment: selectedDepartment
+          departments: json.data.departments,
+          selectedDepartment: json.data.departments[0]
         })
-        this.props.onSelect(selectedDepartment)
       }
     ).catch (
       (err) => {
@@ -67,7 +70,7 @@ export default class DepartmentSelectBox extends Component {
         <select className={style.select} ref='department' onChange={(e) => this.handleOnChange(e)}>
         {
           this.state.departments.map((department, i) => {
-            return <option key={department.name + '_' + i} label={this.formatDepartmentName(department.name)} value={department._links.self.href} />
+            return <option key={department.name + '_' + i} label={this.formatDepartmentName(department.name)} value={department.id} />
           })
         }
         </select>

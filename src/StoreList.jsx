@@ -70,7 +70,7 @@ export default class StoreList extends Component {
       }
     )
 
-    //this.storeDepartments(departments)
+    this.storeDepartments(departments)
   }
 
   handleAddDepartment(department) {
@@ -121,7 +121,6 @@ export default class StoreList extends Component {
         (json) => {
           const { stores } = this.state
           const store = json.data.addDepartmentToStore
-          debugger
           const newStores = stores.map((s) => {
             if (s.id === store.id) {
               return store
@@ -143,19 +142,26 @@ export default class StoreList extends Component {
   }
 
   storeDepartments(departments) {
-    const url = this.props.storeUrlBase + '/departments'
-    let departmentLinks = []
-    departments.map((department) => {
-        departmentLinks.push(department._links.self.href)
-    })
-    const departmentListBody = departmentLinks.join('\n')
+    const url = this.props.apiUrlBase
+    const query = {
+      query: 'mutation updateDepartmentsForStore($departments: [DepartmentInput!], $storeId: Int!)' +
+        ' { updateDepartmentsForStore(departments: $departments, storeId: $storeId)' +
+        ' { id, name, departments { id, name } } }',
+      variables: {
+        departments: departments,
+        storeId: this.state.selectedStore.id
+      }
+    }
+    const body = JSON.stringify(query)
+    console.log('query body:', body)
+
     fetch(url,
       {
-        method: 'put',
+        method: 'post',
         headers: {
-          'Content-Type': 'text/uri-list'
+          'Content-Type': 'application/json'
         },
-        body: departmentListBody
+        body: body
       }
     ).then (
       (response) => {
@@ -184,7 +190,7 @@ export default class StoreList extends Component {
                       onDepartmentAdd={(department) => this.handleAddDepartment(department)}
                       onDepartmentMove={(department, oldIndex, newIndex) =>
                         this.handleDepartmentMove(department, oldIndex, newIndex)}
-                      collapsed={store === this.state.selectedStore}/>
+                      collapsed={store.id === this.state.selectedStore.id}/>
                 </div>
               )
             }

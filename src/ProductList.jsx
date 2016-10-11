@@ -11,32 +11,33 @@ export default class ProductList extends Component {
   constructor () {
     super()
     this.state = {
-      payload: {},
       products: [],
-      departments: {}
     }
   }
 
   componentDidMount() {
-    let url = this.props.apiUrlBase + "/product?size=1000&sort=name&name.dir=desc"
+    const url = this.props.apiUrlBase
+    const query = {
+      query: '{ products { id, name, department { id, name }} }'
+    }
     fetch(url,
       {
-        method: 'get',
+        method: 'post',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(query)
       }
     ).then (
       (response) => {
+        console.log('products response:', response)
         return response.json()
       }
     ).then (
       (json) => {
         this.setState({
-          payload: json,
-          products: json._embedded.product
+          products: json.data.products
         })
-        this.fetchDepartments(json._embedded.product)
       }
     ).catch (
       (err) => {
@@ -45,64 +46,37 @@ export default class ProductList extends Component {
     )
   }
 
-  fetchDepartments (products) {
-    products.map((product) => {
-      fetch(product._links.department.href,
-        {
-          method: 'get',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      ).then ((response) => {
-          return response.json()
-        }
-      ).then((json) => {
-          const departments = this.state.departments
-          departments[product._links.department.href] = json
-          this.setState({
-            departments: departments
-          })
-        }
-      ).catch (
-        (err) => {
-          console.log(err)
-        }
-      )
-    })
-  }
-
   handleStoreClick(e, product) {
     console.log('Clicked ', product)
   }
 
   handleSortByProduct() {
     console.log('Sort By Product')
-    const products = this.state.products
-    products.sort((p1, p2) => {
-      return p1.name.localeCompare(p2.name)
-    })
-    this.setState({
-      products: products
-    })
+    // const products = this.state.products
+    // products.sort((p1, p2) => {
+    //   return p1.name.localeCompare(p2.name)
+    // })
+    // this.setState({
+    //   products: products
+    // })
   }
 
   handleSortByDepartment() {
     console.log('Sort By Department')
-    const products = this.state.products
-    products.sort((p1, p2) => {
-      const department1 = this.state.departments[p1._links.department.href]
-      const department2 = this.state.departments[p2._links.department.href]
-      if (department1.name === department2.name) {
-        return p1.name.localeCompare(p2.name)
-      }
-      else {
-        return department1.name.localeCompare(department2.name)
-      }
-    })
-    this.setState({
-      products: products
-    })
+    // const products = this.state.products
+    // products.sort((p1, p2) => {
+    //   const department1 = this.state.departments[p1._links.department.href]
+    //   const department2 = this.state.departments[p2._links.department.href]
+    //   if (department1.name === department2.name) {
+    //     return p1.name.localeCompare(p2.name)
+    //   }
+    //   else {
+    //     return department1.name.localeCompare(department2.name)
+    //   }
+    // })
+    // this.setState({
+    //   products: products
+    // })
   }
 
   handleAddProduct(product, department) {
@@ -137,8 +111,6 @@ export default class ProductList extends Component {
         {
           this.state.products.map (
             (product, i) => {
-              const department = this.state.departments[product._links.department.href]
-              const name = (department ? department.name : '')
               const productKey = product.name + '_' + i
               return (
                 <div className={style.itemRow}  key={productKey}>
@@ -147,7 +119,7 @@ export default class ProductList extends Component {
                       {product.name}
                   </div>
                   <div className={style.productListItem}>
-                      { name.replace(/_/g, ' ') }
+                      {product.department.name}
                   </div>
                 </div>
               )
