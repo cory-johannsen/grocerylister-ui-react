@@ -5,16 +5,14 @@ import style from './ShoppingList.scss';
 export default class ShoppingList extends Component {
   static propTypes = {
     apiUrlBase: React.PropTypes.string.isRequired,
-    groceryListUrl: React.PropTypes.string.isRequired
+    store: React.PropTypes.object.isRequired
   }
 
   constructor () {
     super()
     this.state = {
       groceryList: {},
-      availableProducts: [],
-      selectedProducts: [],
-      departments: []
+      availableProducts: []
     }
   }
 
@@ -24,63 +22,32 @@ export default class ShoppingList extends Component {
   }
 
   fetchGroceryList() {
-    const url = this.props.groceryListUrl
+    console.log('fetchGroceryList')
+    const url = this.props.apiUrlBase
+    const query = {
+      query: 'query groceryList($storeId: Int!) { groceryList(storeId: $storeId) { id, products { id, name, department {id, name}}}}',
+      variables: {
+        storeId: this.props.store.id
+      }
+    }
     fetch(url,
       {
-        method: 'get',
+        method: 'post',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify(query)
       }
     ).then (
       (response) => {
-        if (response.status === 200) {
-          response.json().then (
-            (json) => {
-              this.setState({
-                groceryList: json
-              })
-              this.fetchSelectedProducts();
-            }
-          )
-        }
-        else {
-          console.log(response)
-        }
-      }
-    ).catch (
-      (err) => {
-        console.log(err)
-      }
-    )
-  }
-
-  fetchSelectedProducts() {
-    console.log('fetchSelectedProducts')
-    const url = this.state.groceryList._links.products.href
-    fetch(url,
-      {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        return response.json()
       }
     ).then (
-      (response) => {
-        if (response.status === 200) {
-          response.json().then (
-            (json) => {
-              console.log('fetched', json._embedded.product.length,'selected products')
-              this.setState({
-                selectedProducts: json._embedded.product
-              })
-              this.sortSelectedProducts();
-            }
-          )
-        }
-        else {
-          console.log(response)
-        }
+      (json) => {
+        console.log('fetchGroceryList json', json)
+        this.setState({
+          groceryList: json.data.groceryList
+        })
       }
     ).catch (
       (err) => {
@@ -113,13 +80,18 @@ export default class ShoppingList extends Component {
   }
 
   fetchAllProducts() {
-    const url = this.props.apiUrlBase + "/product?size=1000&sort=name&name.dir=desc"
+    console.log('fetchAllProducts')
+    const url = this.props.apiUrlBase
+    const query = {
+      query: '{ products { id, name, department { id, name} } }'
+    }
     fetch(url,
       {
-        method: 'get',
+        method: 'post',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify(query)
       }
     ).then (
       (response) => {
@@ -127,43 +99,16 @@ export default class ShoppingList extends Component {
       }
     ).then (
       (json) => {
+        console.log('fetchAllProducts json', json)
         this.setState({
-          availableProducts: json._embedded.product
+          availableProducts: json.data.products
         })
-        this.fetchDepartments(json._embedded.product)
       }
     ).catch (
       (err) => {
         console.log(err)
       }
     )
-  }
-
-  fetchDepartments (products) {
-    products.map((product) => {
-      fetch(product._links.department.href,
-        {
-          method: 'get',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      ).then ((response) => {
-          return response.json()
-        }
-      ).then((json) => {
-          const departments = this.state.departments
-          departments[product._links.department.href] = json
-          this.setState({
-            departments: departments
-          })
-        }
-      ).catch (
-        (err) => {
-          console.log(err)
-        }
-      )
-    })
   }
 
   sortSelectedProducts() {
@@ -223,51 +168,64 @@ export default class ShoppingList extends Component {
     this.storeSelectedProducts()
   }
 
+  renderGroceryList(groceryList) {
+    if (groceryList && groceryList.products) {
+      return (
+        groceryList.products.map((product, i) => {
+          const productName = (product && product.name ? product.name : '')
+          return (
+            <div className={style.productsListRow} key={'selected_' + product.id + '_' + i}>
+              <div className={style.productsListRowItem}>
+                <div className={style.productName}>
+                  <input type="checkbox" onChange={() => this.handleSelectedProductClick(product, i)}/>
+                  {product.name}
+                </div>
+                <div>{product.department.name}</div>
+              </div>
+            </div>
+          )
+        })
+      )
+    }
+    else {
+      return (
+        <div></div>
+      )
+    }
+  }
+
   render() {
-    const { selectedProducts, availableProducts, departments } = this.state
+    const { groceryList, availableProducts } = this.state
+    console.log('groceryList', groceryList)
+    console.log('availableProducts', availableProducts)
     return (
       <div className={style.shoppingList}>
         <div className={style.selectedProducts}>
           {
-            selectedProducts.map((product, i) => {
-              const department = departments[product._links.department.href]
-              const departmentName = (department ? department.name : '')
-              const productName = (product && product.name ? product.name : '')
-              return (
-                <div className={style.productsListRow} key={'selected_' + product.name + '_' + i}>
-                  <div className={style.productsListRowItem}>
-                    <div className={style.productName}>
-                      <input type="checkbox" onChange={() => this.handleSelectedProductClick(product, i)}/>
-                      {product.name}
-                    </div>
-                    <div>{departmentName}</div>
-                  </div>
-                </div>
-              )
-            })
+            this.renderGroceryList(groceryList)
           }
         </div>
+
         Available:
         <div className={style.availableProducts}>
           {
             availableProducts.map((product, i) => {
-              const department = departments[product._links.department.href]
-              const departmentName = (department ? department.name : '')
               const productName = (product && product.name ? product.name : '')
               return (
-                <div className={style.productsListRow} key={'available_' + productName + '_' + i}>
+                <div className={style.productsListRow} key={'available_' + product.id + '_' + i}>
                   <div className={style.productsListRowItem}>
                     <div className={style.productName}>
                       <input type="checkbox" onChange={() => this.handleAvailableProductClick(product, i)}/>
                       {productName}
                     </div>
-                    <div>{departmentName}</div>
+                    <div>{product.department.name}</div>
                   </div>
                 </div>
               )
             })
           }
         </div>
+
       </div>
     );
   }

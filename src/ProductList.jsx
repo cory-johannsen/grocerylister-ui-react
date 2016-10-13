@@ -52,44 +52,88 @@ export default class ProductList extends Component {
 
   handleSortByProduct() {
     console.log('Sort By Product')
-    // const products = this.state.products
-    // products.sort((p1, p2) => {
-    //   return p1.name.localeCompare(p2.name)
-    // })
-    // this.setState({
-    //   products: products
-    // })
+    const products = this.state.products
+    products.sort((p1, p2) => {
+      return p1.name.localeCompare(p2.name)
+    })
+    this.setState({
+      products: products
+    })
   }
 
   handleSortByDepartment() {
     console.log('Sort By Department')
-    // const products = this.state.products
-    // products.sort((p1, p2) => {
-    //   const department1 = this.state.departments[p1._links.department.href]
-    //   const department2 = this.state.departments[p2._links.department.href]
-    //   if (department1.name === department2.name) {
-    //     return p1.name.localeCompare(p2.name)
-    //   }
-    //   else {
-    //     return department1.name.localeCompare(department2.name)
-    //   }
-    // })
-    // this.setState({
-    //   products: products
-    // })
+    const products = this.state.products
+    products.sort((p1, p2) => {
+      if (p1.department.name === p2.department.name) {
+        return p1.name.localeCompare(p2.name)
+      }
+      else {
+        return p1.department.name.localeCompare(p2.department.name)
+      }
+    })
+    this.setState({
+      products: products
+    })
   }
 
   handleAddProduct(product, department) {
     console.log('Add product:', product, 'department:', department)
     if (product && product !== '' && product.trim() !== '') {
-      const url = this.props.apiUrlBase + '/product'
+      const url = this.props.apiUrlBase
+      const query = {
+        query: 'mutation addProduct($name: String!, $departmentId: Int!)' +
+          ' { addProduct(name: $name, departmentId: $departmentId)' +
+          ' { id, name, department { id, name } } }',
+        variables: {
+          name: product,
+          departmentId: department.id
+        }
+      }
+      const body = JSON.stringify(query)
+      console.log('query body:', body)
+
       fetch(url,
         {
           method: 'post',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({name: product, department: department._links.self.href})
+          body: body
+        }
+      ).then (
+        (response) => {
+          if (response.status != 200) {
+            console.log('Error adding product:', response)
+          }
+          else {
+            return response.json()
+          }
+        }
+      ).then(
+        (json) => {
+          console.log('handleAddProduct processing json:', json)
+          if(json.data) {
+            const { products } = this.state
+            const newProduct = json.data.addProduct
+            let found = false
+            products.forEach((p) => {
+              if (p.id === newProduct.id) {
+                found = true
+              }
+            })
+            if (!found) {
+              // will occur when adding a product that already exists
+              products.push(newProduct)
+            }
+
+            this.setState({
+              products: products
+            })
+          }
+          else if (json.errors) {
+            console.log('handleAddProduct processing json:', json.errors)
+          }
         }
       ).catch (
         (err) => {

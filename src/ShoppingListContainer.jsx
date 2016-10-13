@@ -18,13 +18,17 @@ export default class ShoppingListContainer extends Component {
   }
 
   componentDidMount() {
-    const url = this.props.apiUrlBase + "/store"
+    const url = this.props.apiUrlBase
+    const query = {
+      query: '{ stores { id, name }}'
+    }
     fetch(url,
       {
-        method: 'get',
+        method: 'post',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(query)
       }
     ).then (
       (response) => {
@@ -33,8 +37,7 @@ export default class ShoppingListContainer extends Component {
     ).then (
       (json) => {
         this.setState({
-          payload: json,
-          stores: json._embedded.store
+          stores: json.data.stores
         })
       }
     ).catch (
@@ -65,7 +68,7 @@ export default class ShoppingListContainer extends Component {
                   onClick={(e) => this.handleStoreClick(e, store.name)}>
                     {store.name}
                   <ShoppingList apiUrlBase={this.props.apiUrlBase}
-                    groceryListUrl={store._links.groceryList.href}
+                    store={store}
                     collapsed={store.name === this.state.selectedStore}/>
                 </div>
               )

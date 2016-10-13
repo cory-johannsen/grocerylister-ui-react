@@ -29,6 +29,7 @@ export default class AddProductButton extends Component {
   }
 
   handleSelectDepartment(department) {
+    console.log('AddProductButton.handleSelectDepartment:', department)
     this.setState({
       department: department
     })

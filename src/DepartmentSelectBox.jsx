@@ -19,9 +19,9 @@ export default class DepartmentSelectBox extends Component {
 
   handleOnChange(e) {
     e.stopPropagation()
-    const departmentHref = this.refs.department.value
+    const departmentId = parseInt(this.refs.department.value)
     this.state.departments.forEach((department) => {
-      if (department._links.self.href === departmentHref) {
+      if (department.id === departmentId) {
         this.props.onSelect(department)
       }
     })
@@ -52,6 +52,7 @@ export default class DepartmentSelectBox extends Component {
           departments: json.data.departments,
           selectedDepartment: json.data.departments[0]
         })
+        this.props.onSelect(json.data.departments[0])
       }
     ).catch (
       (err) => {
@@ -60,17 +61,13 @@ export default class DepartmentSelectBox extends Component {
     )
   }
 
-  formatDepartmentName(name) {
-    return name.replace(/_/g, ' ');
-  }
-
   render () {
     return (
       <div className={style.departmentSelectBox}>
         <select className={style.select} ref='department' onChange={(e) => this.handleOnChange(e)}>
         {
           this.state.departments.map((department, i) => {
-            return <option key={department.name + '_' + i} label={this.formatDepartmentName(department.name)} value={department.id} />
+            return <option key={department.id + '_' + i} label={department.name} value={department.id} />
           })
         }
         </select>

@@ -130,7 +130,7 @@ export default class StoreList extends Component {
 
           this.setState({
             stores: newStores,
-            seletedStore: store
+            selectedStore: store
           })
         }
       ).catch (
@@ -153,7 +153,7 @@ export default class StoreList extends Component {
       }
     }
     const body = JSON.stringify(query)
-    console.log('query body:', body)
+    // console.log('query body:', body)
 
     fetch(url,
       {
