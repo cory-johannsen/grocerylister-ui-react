@@ -18,7 +18,7 @@ export default class App extends Component {
     }
   }
 
-  handleMenuClick (e, selectedTab) {
+  handleMenuClick (selectedTab) {
     this.setState({
       selectedTab: selectedTab
     })
@@ -30,7 +30,7 @@ export default class App extends Component {
         <div className={style.appHeader}>
           <h2>GroceryLister 2: The Listering</h2>
         </div>
-        <Menu onClick={this.handleMenuClick.bind(this)} />
+        <Menu onClick={(selectedTab) => this.handleMenuClick(selectedTab)} selectedMenuItem={this.state.selectedTab}/>
         <TabPanel selectedTab={this.state.selectedTab}  apiUrlBase={this.props.apiUrlBase} />
       </div>
     )

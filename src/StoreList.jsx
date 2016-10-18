@@ -48,6 +48,8 @@ export default class StoreList extends Component {
   }
 
   handleStoreClick(e, store) {
+    console.log('ShoppingList.handleStoreClick:', e, store)
+    
     const selectedStore = (store === this.state.selectedStore ? undefined : store)
     this.setState(
       {

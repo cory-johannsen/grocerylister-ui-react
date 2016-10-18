@@ -6,13 +6,15 @@
 }
 
 .headerRow {
+  width: 50%;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   border-bottom: 1px solid;
 }
 
 .headerRowItem {
-  width: 25%;
+  width: 50%;
   font-weight: bolder;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -23,17 +25,5 @@
 }
 
 .itemRow {
-  display: flex;
-  flex-direction: row;
-}
-
-.productListItem {
-  width: 25%;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 15px;
-  padding-right: 5px;
-  font-weight: normal;
-  text-align: left;
-  cursor: pointer;
+  width: 50%;
 }

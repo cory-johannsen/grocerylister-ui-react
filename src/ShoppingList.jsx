@@ -22,7 +22,6 @@ export default class ShoppingList extends Component {
   }
 
   fetchGroceryList() {
-    console.log('fetchGroceryList')
     const url = this.props.apiUrlBase
     const query = {
       query: 'query groceryList($storeId: Int!) { groceryList(storeId: $storeId) { id, products { id, name, department {id, name}}}}',
@@ -44,7 +43,6 @@ export default class ShoppingList extends Component {
       }
     ).then (
       (json) => {
-        console.log('fetchGroceryList json', json)
         this.setState({
           groceryList: json.data.groceryList
         })
@@ -56,31 +54,7 @@ export default class ShoppingList extends Component {
     )
   }
 
-  storeSelectedProducts() {
-    let productLinks = []
-    const { selectedProducts } = this.state
-    selectedProducts.map((product) => {
-        productLinks.push(product._links.self.href)
-    })
-    console.log("Storing", productLinks.length, "products")
-    const url = this.state.groceryList._links.products.href
-    fetch(url,
-      {
-        method: 'put',
-        headers: {
-          'Content-Type': 'text/uri-list'
-        },
-        body: productLinks.join('\n')
-      }
-    ).catch (
-      (err) => {
-        console.log(err)
-      }
-    )
-  }
-
   fetchAllProducts() {
-    console.log('fetchAllProducts')
     const url = this.props.apiUrlBase
     const query = {
       query: '{ products { id, name, department { id, name} } }'
@@ -99,9 +73,12 @@ export default class ShoppingList extends Component {
       }
     ).then (
       (json) => {
-        console.log('fetchAllProducts json', json)
+        const products = json.data.products
+        products.sort((p1, p2) => {
+          return p1.name.localeCompare(p2.name)
+        })
         this.setState({
-          availableProducts: json.data.products
+          availableProducts: products
         })
       }
     ).catch (
@@ -113,59 +90,108 @@ export default class ShoppingList extends Component {
 
   sortSelectedProducts() {
     console.log('sortSelectedProducts')
-    const { selectedProducts, departments } = this.state
+    const { selectedProducts } = this.state
     selectedProducts.sort((p1, p2) => {
-      const department1 = departments[p1._links.department.href]
-      const department2 = departments[p2._links.department.href]
-      if (department1 && department2) {
-        if (department1.name === department2.name) {
+      if (p1.department && p2.department) {
+        if (p1.department.name === p2.department.name) {
           return p1.name.localeCompare(p2.name)
         }
         else {
-          return department1.name.localeCompare(department2.name)
+          return p1.department.name.localeCompare(p2.department.name)
         }
       }
       return p1.name.localeCompare(p2.name)
     })
   }
 
-  sortAvailableProducts() {
-    const { availableProducts } = this.state
-    availableProducts.sort((p1, p2) => {
-      return p1.name.localeCompare(p2.name)
-    })
-  }
-
-  handleSelectedProductClick(product, index) {
+  handleSelectedProductClick(product) {
     console.log("Clicked on selected product", product)
-    const { selectedProducts, availableProducts } = this.state
-    selectedProducts.splice(index, 1)
-    this.sortSelectedProducts()
-    availableProducts.push(product)
-    this.sortAvailableProducts()
-    this.setState(
+    const url = this.props.apiUrlBase
+    const query = {
+      query: 'mutation removeProductFromGroceryList($productId: Int!, $groceryListId: Int!)' +
+        ' { removeProductFromGroceryList(productId: $productId, groceryListId: $groceryListId)' +
+        ' { id, name, products { id, name, department { id, name } } } }',
+      variables: {
+        productId: product.id,
+        groceryListId: this.state.groceryList.id
+      }
+    }
+    const body = JSON.stringify(query)
+    fetch(url,
       {
-        selectedProducts,
-        availableProducts
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: body
+      }
+    ).then (
+      (response) => {
+        return response.json()
+      }
+    ).then (
+      (json) => {
+        console.log('removeProductFromGroceryList json:', json)
+        if (json.data) {
+          this.setState({
+            groceryList: json.data.removeProductFromGroceryList
+          })
+        }
+        this.sortSelectedProducts()
+      }
+    ).catch (
+      (err) => {
+        console.log(err)
       }
     )
-    this.storeSelectedProducts()
   }
 
-  handleAvailableProductClick(product, index) {
+  handleAvailableProductClick(product) {
     console.log("Clicked on available product", product)
-    const { selectedProducts, availableProducts } = this.state
-    selectedProducts.push(product)
-    this.sortSelectedProducts()
-    availableProducts.splice(index, 1)
-    this.sortAvailableProducts()
-    this.setState(
+    // Check for duplicates
+    const index = this.state.groceryList.products.findIndex((p) => {
+      return p.id === product.id
+    })
+    if (index >= 0) {
+      return
+    }
+    const url = this.props.apiUrlBase
+    const query = {
+      query: 'mutation addProductToGroceryList($productId: Int!, $groceryListId: Int!)' +
+        ' { addProductToGroceryList(productId: $productId, groceryListId: $groceryListId)' +
+        ' { id, name, products { id, name, department { id, name } } } }',
+      variables: {
+        productId: product.id,
+        groceryListId: this.state.groceryList.id
+      }
+    }
+    const body = JSON.stringify(query)
+    fetch(url,
       {
-        selectedProducts,
-        availableProducts
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: body
+      }
+    ).then (
+      (response) => {
+        return response.json()
+      }
+    ).then (
+      (json) => {
+        console.log('addProductToGroceryList json:', json)
+        if (json.data) {
+          this.setState({
+            groceryList: json.data.addProductToGroceryList
+          })
+        }
+      }
+    ).catch (
+      (err) => {
+        console.log(err)
       }
     )
-    this.storeSelectedProducts()
   }
 
   renderGroceryList(groceryList) {
@@ -177,7 +203,7 @@ export default class ShoppingList extends Component {
             <div className={style.productsListRow} key={'selected_' + product.id + '_' + i}>
               <div className={style.productsListRowItem}>
                 <div className={style.productName}>
-                  <input type="checkbox" onChange={() => this.handleSelectedProductClick(product, i)}/>
+                  <input type="checkbox" onChange={() => this.handleSelectedProductClick(product)}/>
                   {product.name}
                 </div>
                 <div>{product.department.name}</div>
@@ -196,8 +222,6 @@ export default class ShoppingList extends Component {
 
   render() {
     const { groceryList, availableProducts } = this.state
-    console.log('groceryList', groceryList)
-    console.log('availableProducts', availableProducts)
     return (
       <div className={style.shoppingList}>
         <div className={style.selectedProducts}>
@@ -210,13 +234,11 @@ export default class ShoppingList extends Component {
         <div className={style.availableProducts}>
           {
             availableProducts.map((product, i) => {
-              const productName = (product && product.name ? product.name : '')
               return (
                 <div className={style.productsListRow} key={'available_' + product.id + '_' + i}>
                   <div className={style.productsListRowItem}>
-                    <div className={style.productName}>
-                      <input type="checkbox" onChange={() => this.handleAvailableProductClick(product, i)}/>
-                      {productName}
+                    <div className={style.productName} onClick={() => this.handleAvailableProductClick(product)}>
+                      {product.name}
                     </div>
                     <div>{product.department.name}</div>
                   </div>

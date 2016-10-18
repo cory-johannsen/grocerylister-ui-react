@@ -13,7 +13,7 @@ export default class ShoppingListContainer extends Component {
     super()
     this.state = {
       stores: [],
-      selectedStore: ''
+      selectedStore: undefined
     }
   }
 
@@ -36,9 +36,15 @@ export default class ShoppingListContainer extends Component {
       }
     ).then (
       (json) => {
+        let {selectedStore} = this.state
+        if (!selectedStore) {
+          selectedStore = json.data.stores[0]
+        }
         this.setState({
-          stores: json.data.stores
+          stores: json.data.stores,
+          selectedStore: selectedStore
         })
+
       }
     ).catch (
       (err) => {
@@ -48,12 +54,36 @@ export default class ShoppingListContainer extends Component {
   }
 
   handleStoreClick(e, store) {
-    const selectedStore = (store === this.state.selectedStore ? undefined : store)
-    this.setState(
-      {
-        selectedStore: selectedStore
-      }
-    )
+    console.log('ShoppingListContainer.handleStoreClick:', e, store)
+    if (store === this.state.selectedStore) {
+      this.setState(
+        {
+          selectedStore: null
+        }
+      )
+    }
+    else {
+      this.setState(
+        {
+          selectedStore: store
+        }
+      )
+    }
+  }
+
+  renderShoppingList(store) {
+    const {selectedStore} = this.state
+    if (selectedStore && store.id === selectedStore.id) {
+      return (
+        <ShoppingList apiUrlBase={this.props.apiUrlBase}
+          store={store}/>
+      )
+    }
+    else {
+      return (
+        <div></div>
+      )
+    }
   }
 
   render() {
@@ -62,14 +92,14 @@ export default class ShoppingListContainer extends Component {
         {
           this.state.stores.map (
             (store) => {
+              const shoppingList = this.renderShoppingList(store)
               return (
                 <div className={storeStyle.storeListItem}
-                  key={store.name}
-                  onClick={(e) => this.handleStoreClick(e, store.name)}>
-                    {store.name}
-                  <ShoppingList apiUrlBase={this.props.apiUrlBase}
-                    store={store}
-                    collapsed={store.name === this.state.selectedStore}/>
+                  key={store.id}>
+                    <span onClick={(e) => this.handleStoreClick(e, store)}>
+                    { store.name }
+                    </span>
+                    { shoppingList }
                 </div>
               )
             }

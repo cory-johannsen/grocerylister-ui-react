@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 import AddProductButton from './AddProductButton'
+import ProductListItem from './ProductListItem'
 import style from './ProductList.scss'
 
 export default class ProductList extends Component {
@@ -158,13 +159,8 @@ export default class ProductList extends Component {
               const productKey = product.name + '_' + i
               return (
                 <div className={style.itemRow}  key={productKey}>
-                  <div className={style.productListItem}
-                    onClick={(e) => this.handleStoreClick(e, product.name)}>
-                      {product.name}
-                  </div>
-                  <div className={style.productListItem}>
-                      {product.department.name}
-                  </div>
+                  <ProductListItem apiUrlBase={this.props.apiUrlBase} product={product}
+                    onEdit={(p) => {console.log('edit product', p)}} />
                 </div>
               )
             }
