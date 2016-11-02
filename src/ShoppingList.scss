@@ -1,5 +1,6 @@
 .shoppingList {
-  width: 33%;
+  width: calc(100% - 25px);
+  max-width: 400px;
   height: 100%;
   font-weight: normal;
   padding-left: 10px;
@@ -23,7 +24,7 @@
 }
 
 .productsListRow {
-  height: 25px;
+  height: auto;
   padding-left: 10px;
   padding-top: 4px;
   padding-bottom: 1px;
@@ -40,5 +41,9 @@
 }
 
 .productName {
+  flex-shrink: 1;
+}
 
+.departmentName {
+  flex-shrink: 0;
 }

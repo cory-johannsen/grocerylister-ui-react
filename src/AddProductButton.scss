@@ -1,5 +1,6 @@
 .addProductButton {
-  width: 400px;
+  width: calc(100% - 6px);
+  max-width: 400px;
   padding: 2px;
   cursor: pointer;
   display: flex;
@@ -11,6 +12,8 @@
 .input {
   width: 200px;
   height: 20px;
+  margin-top: 5px;
+  vertical-align: center;
 }
 
 .plus {

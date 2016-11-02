@@ -240,7 +240,7 @@ export default class ShoppingList extends Component {
                     <div className={style.productName} onClick={() => this.handleAvailableProductClick(product)}>
                       {product.name}
                     </div>
-                    <div>{product.department.name}</div>
+                    <div className={style.departmentName} >{product.department.name}</div>
                   </div>
                 </div>
               )

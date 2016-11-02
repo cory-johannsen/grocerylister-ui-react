@@ -11,7 +11,8 @@
 }
 
 .departmentListRow {
-  width: 25%;
+  width: calc(100% - 25px);
+  max-width: 400px;
   height: 25px;
   padding-left: 15px;
   padding-top: 4px;

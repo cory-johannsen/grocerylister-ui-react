@@ -11,9 +11,9 @@
 }
 
 .controls {
-  width: 50%;
   display: flex;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .department {

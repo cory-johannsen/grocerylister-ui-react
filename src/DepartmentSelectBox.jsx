@@ -64,7 +64,7 @@ export default class DepartmentSelectBox extends Component {
   render () {
     return (
       <div className={style.departmentSelectBox}>
-        <select className={style.select} ref='department' onChange={(e) => this.handleOnChange(e)}>
+        <select className={style.selection} ref='department' onChange={(e) => this.handleOnChange(e)}>
         {
           this.state.departments.map((department, i) => {
             return <option key={department.id + '_' + i} label={department.name} value={department.id} />

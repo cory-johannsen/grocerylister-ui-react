@@ -1,5 +1,6 @@
 .addDepartmentButton {
-  width: 25%;
+  width: calc(100% - 35px);
+  max-width: 400px;
   height: 30px;
   padding-left: 15px;
   padding-top: 4px;

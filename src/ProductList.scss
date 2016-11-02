@@ -6,7 +6,8 @@
 }
 
 .headerRow {
-  width: 50%;
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -25,5 +26,7 @@
 }
 
 .itemRow {
-  width: 50%;
+  width: calc(100% - 25px);
+  max-width: 400px;
+  text-align: left;
 }
