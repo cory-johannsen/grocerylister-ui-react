@@ -20,9 +20,20 @@
   padding-right: 5px;
 }
 
+.buttons {
+  display: flex;
+}
+
 .edit {
   background-image: url('./images/edit.png');
   width: 20px;
   height: 20px;
   border: 1px solid green;
+  margin-right: 5px;
+}
+
+.delete {
+  width: 20px;
+  height: 20px;
+  border: 1px solid red;
 }

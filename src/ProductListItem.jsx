@@ -23,7 +23,10 @@ export default class ProductListItem extends Component {
           <div className={style.department}>
               {this.props.product.department.name}
           </div>
-          <div className={style.edit}></div>
+          <div className={style.buttons}>
+            <div className={style.edit}></div>
+            <div className={style.delete}></div>
+          </div>
         </div>
       </div>
     )

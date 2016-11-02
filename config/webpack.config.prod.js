@@ -3,6 +3,12 @@ var autoprefixer = require('autoprefixer');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var cssModules = '?modules&localIdentName=[name]__[local]___[hash:base64:5]'
+
+
+const NODE_ENV = "production";
+const dotenv = require('dotenv');
+
 
 // TODO: hide this behind a flag and eliminate dead code on eject.
 // This shouldn't be exposed to the user.
@@ -18,10 +24,29 @@ var indexHtmlPath = path.resolve(__dirname, relativePath, 'index.html');
 var faviconPath = path.resolve(__dirname, relativePath, 'favicon.ico');
 var buildPath = path.join(__dirname, isInNodeModules ? '../../..' : '..', 'build');
 
+
+const dotEnvVars = dotenv.config();
+const environmentEnv = dotenv.config({
+  path: path.join(__dirname, '.', `${NODE_ENV}.config.js`),
+  silent: false,
+});
+const envVariables = Object.assign({}, dotEnvVars, environmentEnv);
+
+const defines =
+  Object.keys(envVariables)
+  .reduce((memo, key) => {
+    const val = JSON.stringify(envVariables[key]);
+    memo[`__${key.toUpperCase()}__`] = val;
+    return memo;
+  }, {
+    __NODE_ENV__: JSON.stringify(NODE_ENV)
+  });
+
+
 module.exports = {
   bail: true,
   devtool: 'source-map',
-  entry: path.join(srcPath, 'index'),
+  entry: path.join(srcPath, 'index.js'),
   output: {
     path: buildPath,
     filename: '[name].[chunkhash].js',
@@ -31,7 +56,7 @@ module.exports = {
     publicPath: '/'
   },
   resolve: {
-    extensions: ['', '.js'],
+    extensions: ['', '.js', '.jsx', '.haml', '.scss'],
   },
   resolveLoader: {
     root: nodeModulesPath,
@@ -47,7 +72,7 @@ module.exports = {
     ],
     loaders: [
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/,
         include: srcPath,
         loader: 'babel',
         query: require('./babel.prod')
@@ -59,6 +84,11 @@ module.exports = {
         // https://github.com/webpack/css-loader/issues/281
         // We already have it thanks to postcss.
         loader: ExtractTextPlugin.extract('style', 'css?-autoprefixer!postcss')
+      },
+      {
+        test: /\.scss$/,
+        loader: 'style!css' + cssModules + '!sass',
+        exclude: /node_modules/
       },
       {
         test: /\.json$/,
@@ -101,7 +131,7 @@ module.exports = {
         minifyURLs: true
       }
     }),
-    new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' }),
+    new webpack.DefinePlugin(defines),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({

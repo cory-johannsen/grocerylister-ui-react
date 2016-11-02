@@ -32,11 +32,6 @@ const environmentEnv = dotenv.config({
 });
 const envVariables = Object.assign({}, dotEnvVars, environmentEnv);
 
-// console.log('__dirname', __dirname)
-// console.log('dotEnvVars', dotEnvVars)
-// console.log('environmentEnv', environmentEnv)
-// console.log('envVariables', envVariables)
-
 const defines =
   Object.keys(envVariables)
   .reduce((memo, key) => {
@@ -46,12 +41,6 @@ const defines =
   }, {
     __NODE_ENV__: JSON.stringify(NODE_ENV)
   });
-
-
-console.log('defines', defines)
-console.log('srcPath', srcPath)
-console.log('nodeModulesPath', nodeModulesPath)
-console.log('indexHtmlPath', indexHtmlPath)
 
 module.exports = {
   devtool: 'eval',
@@ -90,7 +79,8 @@ module.exports = {
         test: /\.scss$/,
         loader: 'style!css' + cssModules + '!sass',
         exclude: /node_modules/
-      }, {
+      },
+      {
         test: /\.png$/,
         loader: 'url'
       }
